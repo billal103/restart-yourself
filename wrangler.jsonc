@@ -1,0 +1,14 @@
+{
+  // Configures this repo to deploy as a Cloudflare Worker serving static
+  // assets — the current recommended replacement for the older, separate
+  // "Pages" product. `not_found_handling: "single-page-application"` is the
+  // equivalent of public/_redirects' `/* /index.html 200` rule: any request
+  // that doesn't match a real file in dist/ (e.g. /dashboard/stories) falls
+  // back to index.html so React Router can take over client-side.
+  "name": "restart-yourself",
+  "compatibility_date": "2024-09-23",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
