@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "community": "Community",
+    "explore": "Explore Stories",
+    "groups": "Groups",
+    "resources": "Support Resources",
+    "howItWorks": "How It Works",
+    "login": "Log in",
+    "dashboard": "Dashboard",
+    "shareStory": "Share Your Story",
+    "toggleMenu": "Toggle navigation menu"
+  },
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "search": "Search",
+    "comingSoon": "Coming soon",
+    "accept": "Accept",
+    "decline": "Decline",
+    "block": "Block",
+    "unblock": "Unblock",
+    "report": "Report"
+  },
+  "dashboardNav": {
+    "dashboard": "Dashboard",
+    "myStories": "My Stories",
+    "savedStories": "Saved Stories",
+    "privateJournal": "Private Journal",
+    "moodTracker": "Mood Tracker",
+    "recoveryGoals": "Recovery Goals",
+    "conversations": "Conversations",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "adminNav": {
+    "overview": "Overview",
+    "userManagement": "User Management",
+    "storyModeration": "Story Moderation",
+    "commentModeration": "Comment Moderation",
+    "messageReports": "Message Reports",
+    "callReports": "Call & Comms Reports",
+    "categoryManagement": "Category Management",
+    "communityManagement": "Community Management",
+    "professionalManagement": "Professional Management",
+    "resourceManagement": "Resource Management",
+    "platformSettings": "Platform Settings",
+    "auditLogs": "Audit Logs"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "loginSubtitle": "Log in to continue your journey.",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot password?",
+    "logIn": "Log In",
+    "continueAsGuest": "Continue as Guest",
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "createAccount": "Create Account",
+    "alreadyHaveAccount": "Already have an account?"
+  },
+  "safety": {
+    "title": "Safety & Crisis Support",
+    "immediateDanger": "If you are in immediate danger",
+    "notAlone": "You are not alone",
+    "crisisResources": "Crisis Resources",
+    "ifYouSeeContent": "If you see content that concerns you"
+  },
+  "language": {
+    "english": "English",
+    "bangla": "বাংলা"
+  }
+}

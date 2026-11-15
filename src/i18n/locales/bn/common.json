@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "community": "কমিউনিটি",
+    "explore": "গল্প খুঁজুন",
+    "groups": "গ্রুপ",
+    "resources": "সহায়তা রিসোর্স",
+    "howItWorks": "কীভাবে কাজ করে",
+    "login": "লগইন",
+    "dashboard": "ড্যাশবোর্ড",
+    "shareStory": "আপনার গল্প শেয়ার করুন",
+    "toggleMenu": "নেভিগেশন মেনু টগল করুন"
+  },
+  "common": {
+    "loading": "লোড হচ্ছে…",
+    "save": "সংরক্ষণ করুন",
+    "cancel": "বাতিল",
+    "submit": "জমা দিন",
+    "delete": "মুছুন",
+    "edit": "সম্পাদনা",
+    "back": "ফিরে যান",
+    "search": "খুঁজুন",
+    "comingSoon": "শীঘ্রই আসছে",
+    "accept": "গ্রহণ করুন",
+    "decline": "প্রত্যাখ্যান করুন",
+    "block": "ব্লক করুন",
+    "unblock": "আনব্লক করুন",
+    "report": "রিপোর্ট করুন"
+  },
+  "dashboardNav": {
+    "dashboard": "ড্যাশবোর্ড",
+    "myStories": "আমার গল্পসমূহ",
+    "savedStories": "সংরক্ষিত গল্প",
+    "privateJournal": "ব্যক্তিগত জার্নাল",
+    "moodTracker": "মুড ট্র্যাকার",
+    "recoveryGoals": "পুনরুদ্ধার লক্ষ্য",
+    "conversations": "কথোপকথন",
+    "notifications": "বিজ্ঞপ্তি",
+    "settings": "সেটিংস"
+  },
+  "adminNav": {
+    "overview": "সংক্ষিপ্ত বিবরণ",
+    "userManagement": "ব্যবহারকারী ব্যবস্থাপনা",
+    "storyModeration": "গল্প মডারেশন",
+    "commentModeration": "মন্তব্য মডারেশন",
+    "messageReports": "বার্তা রিপোর্ট",
+    "callReports": "কল ও যোগাযোগ রিপোর্ট",
+    "categoryManagement": "বিভাগ ব্যবস্থাপনা",
+    "communityManagement": "কমিউনিটি ব্যবস্থাপনা",
+    "professionalManagement": "পেশাদার ব্যবস্থাপনা",
+    "resourceManagement": "রিসোর্স ব্যবস্থাপনা",
+    "platformSettings": "প্ল্যাটফর্ম সেটিংস",
+    "auditLogs": "অডিট লগ"
+  },
+  "auth": {
+    "welcomeBack": "আবার স্বাগতম",
+    "loginSubtitle": "আপনার যাত্রা চালিয়ে যেতে লগইন করুন।",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+    "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+    "logIn": "লগইন করুন",
+    "continueAsGuest": "অতিথি হিসেবে চালিয়ে যান",
+    "noAccount": "অ্যাকাউন্ট নেই?",
+    "register": "নিবন্ধন করুন",
+    "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+    "alreadyHaveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?"
+  },
+  "safety": {
+    "title": "নিরাপত্তা ও সংকট সহায়তা",
+    "immediateDanger": "আপনি যদি তাৎক্ষণিক বিপদে থাকেন",
+    "notAlone": "আপনি একা নন",
+    "crisisResources": "সংকট সহায়তা রিসোর্স",
+    "ifYouSeeContent": "উদ্বেগজনক কনটেন্ট দেখলে"
+  },
+  "language": {
+    "english": "English",
+    "bangla": "বাংলা"
+  }
+}

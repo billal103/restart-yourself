@@ -1,0 +1,100 @@
+name: CI
+
+# Runs the exact same checks used throughout development — typecheck, lint,
+# the real-Postgres RLS/RPC suite (PGlite, no Docker needed), unit tests,
+# build, and the Playwright suite (including real browser-level WebRTC
+# negotiation) — on every push and pull request. Nothing here deploys
+# anything; see deploy.yml for that.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Typecheck, lint, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc -b
+
+      - name: Lint
+        run: npx oxlint
+
+      - name: Unit tests (Vitest + Testing Library)
+        run: npx vitest run
+
+      - name: Real-Postgres RLS/RPC tests (PGlite, no Docker needed)
+        run: npm run test:db
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests (including real WebRTC negotiation)
+        run: npx playwright test --reporter=list,html
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # This job only runs after `test` passes, only on a push to main — never
+    # on a pull request. It does nothing (fails fast with a clear error, not
+    # a silent no-op or a broken deploy) until the repository owner adds:
+    #   - secrets.CLOUDFLARE_API_TOKEN  (a Cloudflare API token scoped to Pages:Edit)
+    #   - secrets.CLOUDFLARE_ACCOUNT_ID
+    #   - vars.CLOUDFLARE_PAGES_PROJECT (the Pages project name, created once via
+    #     the Cloudflare dashboard or `wrangler pages project create`)
+    #   - the real Supabase values as repository/environment variables, see
+    #     docs/DEPLOYMENT.md — without them this builds the mock-data frontend.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
