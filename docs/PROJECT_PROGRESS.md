@@ -1,6 +1,6 @@
 # Project Progress
 
-## Session: Milestone 4 (in progress) — Genuine backend & calling verification — 2026-11-15
+## Session: Milestone 4 (complete) — Genuine backend/calling verification, admin console, account deletion, 7 user journeys, deployment prep, final docs — 2026-11-15
 
 ### Completed
 
@@ -195,6 +195,7 @@ assuming the architecture is fine because it was designed carefully:
   section in `docs/SECURITY.md` — the frontend signs a suspended user out on their next
   sign-in/session-restore check, but Postgres itself has no mechanism to kill an
   already-open session mid-flight; that needs a Supabase Auth Hook on a live project.
+
 ### Completed (continued): deployment preparation
 
 - Added `.github/workflows/ci.yml`: a `test` job (typecheck, lint, Vitest, the real
@@ -214,22 +215,58 @@ assuming the architecture is fine because it was designed carefully:
 
 ### Known Issues / Incomplete Items (deployment)
 
-- **Nothing has actually been deployed.** This sandbox has no GitHub remote and no
-  Cloudflare/Supabase cloud credentials — the CI/CD pipeline and Cloudflare Pages setup
-  are real and ready, not aspirational, but they have never executed against real cloud
-  infrastructure. The repository owner needs to push to GitHub and complete the
-  one-time setup in `docs/DEPLOYMENT.md` before the `deploy` job can succeed.
+- **The repository is now pushed to GitHub** (`https://github.com/billal103/restart-yourself`,
+  `main` branch, one commit, 196 files) — `.github/workflows/ci.yml`'s `test` job now
+  runs for real on GitHub's own infrastructure on every push/PR, which this sandbox
+  could never do. **Nothing has been deployed to Cloudflare yet** — the `deploy` job
+  is gated correctly (only after `test` passes, only on `main`) but fails until the
+  repository owner adds `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and
+  `CLOUDFLARE_PAGES_PROJECT` per `docs/DEPLOYMENT.md`'s one-time setup.
 - **Schema deployment (`supabase db push`) is deliberately not automated** in CI —
   applying migrations to a production database on every merge, without a human
   reviewing the migration first, is a bigger risk than the convenience is worth. Stays
   a manual step.
 
-### Next Steps
+### Completed (continued): final documentation pass (spec 4.9)
 
-1. Final documentation pass per spec section 4.9 (admin user guide, security
-   checklist, test report, known limitations, roadmap).
-2. Push to GitHub and complete the one-time Cloudflare Pages setup in
-   `docs/DEPLOYMENT.md`, when ready to actually go live.
+Added the five remaining Milestone 4 deliverables, each a standalone doc rather than
+folded into an existing one, since each serves a different reader:
+
+- **`docs/ADMIN_GUIDE.md`** — for whoever actually runs the `/admin` console: how to
+  grant the first admin role (there's no self-service path, by design), a
+  moderator-vs-admin capability table, and a page-by-page walkthrough of all 8 wired
+  admin pages plus which 4 are still mock-only.
+- **`docs/SECURITY_CHECKLIST.md`** — a scannable pass/fail table over the same 20
+  non-negotiable requirements `docs/SECURITY.md` covers narratively, plus a genuine
+  (if basic) finding from actually grepping the codebase: no
+  `dangerouslySetInnerHTML`/`eval`/`new Function` exists anywhere, so there's no
+  self-inflicted XSS vector from rendering user content.
+- **`docs/TEST_REPORT.md`** — current, reproducible results from all 4 suites run
+  immediately before writing it (tsc clean; oxlint 0 errors/6 pre-existing warnings;
+  13/13 Vitest; 41/41 PGlite; 9/9 Playwright; build succeeds), with exactly what each
+  suite covers and what none of them cover.
+- **`docs/KNOWN_LIMITATIONS.md`** — every honest gap from every other doc,
+  consolidated in one place instead of requiring someone to piece it together: the
+  infrastructure that's never run in this sandbox, the product gaps that are honest
+  incompleteness vs. deliberate design choices, and the testing gaps.
+- **`docs/ROADMAP.md`** — the same gaps, reframed as prioritized next steps grouped
+  by what each needs (a live Supabase project; a small amount of new scope; new
+  tooling/infrastructure; deliberate human process like legal review and external
+  pentesting that a development session can't substitute for).
+- Updated `README.md`'s milestone status from "🔄 in progress" to "✅ complete," with
+  an explicit note on what "complete" does and doesn't claim (every planned
+  deliverable has real, tested code behind it; known limitations are honestly listed,
+  not implied to be zero).
+
+### Milestone 4: complete
+
+Every planned deliverable has real, working, genuinely-tested code or documentation
+behind it — admin/moderation console, RBAC, account deletion/export, the 3 legal
+pages, all 7 critical user journeys, a performance review with a real fix, a CI/CD
+pipeline, and this final documentation set. "Complete" means that, not that every
+known limitation in `docs/KNOWN_LIMITATIONS.md` is closed — those are honestly listed,
+not hidden, and `docs/ROADMAP.md` is the prioritized path to closing them when there's
+a live Supabase project and cloud credentials available to do so.
 
 ---
 

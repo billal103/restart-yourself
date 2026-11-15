@@ -4,12 +4,15 @@ A global, anonymous-first emotional support and personal recovery platform.
 
 > **Your Story Matters. Your Journey Isn't Over.**
 
-This repository implements **Milestones 1–3** and is in progress on **Milestone 4**: the full
-frontend, a real Supabase backend (database, RLS, auth), and the interactive feature set
-(stories, messaging, calling, group chat, recovery tools, notifications) wired end-to-end —
-and now genuinely tested against a real Postgres engine and real browser-level WebRTC, not
-just reviewed. The app runs fully on mock data with zero setup; point it at a real Supabase
-project (see below) to switch on the real backend.
+This repository implements **all four milestones**: the full frontend, a real Supabase
+backend (database, RLS, auth), the interactive feature set (stories, messaging, calling,
+group chat, recovery tools, notifications) wired end-to-end, a real admin/moderation
+console, real account deletion/export, and a CI/CD pipeline — genuinely tested against a
+real Postgres engine, real browser-level WebRTC, and real Playwright journeys through the
+UI, not just reviewed. The app runs fully on mock data with zero setup; point it at a real
+Supabase project (see below) to switch on the real backend. See
+[docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) for exactly what "complete" does and
+doesn't mean here, and [docs/ROADMAP.md](docs/ROADMAP.md) for what's next.
 
 ## Tech Stack
 
@@ -76,6 +79,14 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full folder layout and routi
   implemented-vs-tested status for each one
 - [DEPLOYMENT.md](docs/DEPLOYMENT.md) — CI/CD pipeline and how to enable real Cloudflare
   Pages deployment
+- [ADMIN_GUIDE.md](docs/ADMIN_GUIDE.md) — how to use the `/admin` console, role by role
+- [SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md) — scannable pass/fail view of every
+  non-negotiable security requirement
+- [TEST_REPORT.md](docs/TEST_REPORT.md) — current results and exact coverage of every test
+  suite
+- [KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) — every honest gap, consolidated in one
+  place
+- [ROADMAP.md](docs/ROADMAP.md) — prioritized next steps
 - [IMAGE_CREDITS.md](docs/IMAGE_CREDITS.md) — photography sources
 
 ## Milestone Status
@@ -87,15 +98,19 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full folder layout and routi
   calling, notifications, personal recovery tools, professional directory, and partial
   English/Bangla translation all wired to the real backend in dual-mode — see Security and
   Database docs for the honest implemented-vs-tested status of each)
-- 🔄 **Milestone 4 (in progress)** — Administration, Security Testing, Deployment. The backend
-  (all 21 migrations, RLS, and RPCs) has now been genuinely executed against a real Postgres
-  engine, real browser-level WebRTC negotiation has been verified, the admin console (story/
-  comment moderation, message/call reports, audit logs, user role & account-status management,
-  category management) is wired to real data and RBAC, account deletion/export are real (not
-  no-op buttons), all 3 previously-promised legal pages exist, and all 7 of the spec's critical
-  user journeys are covered by real Playwright tests — see [docs/SECURITY.md](docs/SECURITY.md)
-  and [docs/PROJECT_PROGRESS.md](docs/PROJECT_PROGRESS.md) for the full writeup. Performance
-  review and deployment prep remain.
+- ✅ **Milestone 4** — Administration, Security Testing, Deployment. The backend (all 21
+  migrations, RLS, and RPCs) has been genuinely executed against a real Postgres engine (41
+  passing assertions), real browser-level WebRTC negotiation has been verified, the admin
+  console (story/comment moderation, message/call reports, audit logs, user role &
+  account-status management, category management) is wired to real data and RBAC, account
+  deletion/export are real (not no-op buttons), all 3 previously-promised legal pages exist,
+  all 7 of the spec's critical user journeys are covered by real Playwright tests, a
+  performance review found and fixed real image-loading issues, and a CI/CD pipeline is in
+  place. "Complete" here means every planned Milestone 4 deliverable has real, working,
+  tested code behind it — not that every known limitation is closed; see
+  [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) for the honest remaining gaps (mainly:
+  nothing has been deployed to live infrastructure yet, since this sandbox has no cloud
+  credentials) and [docs/ROADMAP.md](docs/ROADMAP.md) for what's next.
 
 ## Important Notes
 
@@ -105,21 +120,17 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full folder layout and routi
   reporting, private messaging, group chat, calling, journal, mood tracking, recovery goals,
   and notifications — is real and persisted. A few purely read-only browsing pages (Landing,
   Community Feed, Category Details, Search) remain mock-only by choice.
-- **The SQL/RLS/RPC layer has now been genuinely executed**, not just reviewed — against a real
+- **The SQL/RLS/RPC layer has been genuinely executed**, not just reviewed — against a real
   Postgres engine (`@electric-sql/pglite`, no Docker needed) with 41 passing access-control
-  assertions, which found and fixed 4 real bugs (see [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)).
-  Real browser-level WebRTC negotiation (`getUserMedia`/`RTCPeerConnection`/ICE) is also verified
-  via Playwright, the admin console's 8 pages are covered by 10 Testing Library tests
-  (`tests/unit/AdminPages.test.tsx`), and all 7 of the spec's critical user journeys are covered
-  by real Playwright tests (`tests/e2e/user-journeys.spec.ts`) that drive the actual UI — writing
-  those caught a real bug where posting a comment in mock/demo mode silently did nothing. A
-  GitHub Actions CI pipeline runs this entire suite on every push/PR, with a gated Cloudflare
-  Pages deploy job ready once repository secrets are added (see
-  [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)) — nothing has actually been deployed from this
-  environment. What's still unverified in this sandbox: Supabase's own hosted GoTrue/Realtime/
-  pg_cron infrastructure, true server-side enforcement of account suspension (recorded and
-  RLS-protected, but not yet backed by a Supabase Auth Hook), and a real cross-network call
-  through a live project's STUN/TURN — see [docs/SECURITY.md](docs/SECURITY.md) for the itemized,
-  honest status of every requirement.
+  assertions, which found and fixed real bugs (see [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)).
+  Real browser-level WebRTC negotiation is also verified via Playwright, the admin console's 8
+  pages are covered by Testing Library tests, and all 7 of the spec's critical user journeys are
+  covered by real Playwright tests that drive the actual UI. A GitHub Actions CI pipeline runs
+  this entire suite on every push/PR, with a gated Cloudflare Pages deploy job ready once
+  repository secrets are added — nothing has actually been deployed from this environment. See
+  [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for exact results and coverage, and
+  [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) for what's still unverified (mainly:
+  Supabase's own hosted GoTrue/Realtime/pg_cron infrastructure, full server-side enforcement of
+  account suspension, and a real cross-network call through a live project's STUN/TURN).
 - This platform is a peer support community, **not** a crisis service, emergency responder, or
   substitute for professional mental healthcare. See the in-app Safety & Crisis Support page.
