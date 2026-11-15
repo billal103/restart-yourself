@@ -1,69 +1,59 @@
 # Deployment Guide
 
-This covers the GitHub Actions CI/CD pipeline and how to turn on real deployment to
-Cloudflare Pages — all free-tier, per the project's $0 cost-control rule. **Nothing has
-been deployed from this sandbox**: there is no GitHub remote, no Cloudflare account,
-and no cloud credentials available here. Everything below is the configuration that
-makes a real deployment possible once you (not this session) have those accounts — it
-has been written and is syntactically ready, but the actual deploy step has never run.
+This covers how the project actually deploys to Cloudflare, free-tier, per the
+project's $0 cost-control rule. The repository is pushed to
+`https://github.com/billal103/restart-yourself` and connected to a Cloudflare
+Workers & Pages project named `restart-yourself`, deploying on every push to `main`.
 
-## What's already in place
+## How this actually deploys
 
-- **`.github/workflows/ci.yml`** — a `test` job that runs on every push and pull
-  request: `npx tsc -b`, `npx oxlint`, `npx vitest run`, `npm run test:db` (the real
-  Postgres suite — no Docker needed in CI either), `npm run build`, and the full
-  Playwright suite (installing Chromium first). This is the exact same sequence used
-  throughout development, so CI failing means something regressed, not that CI is
-  checking something different from what was tested locally.
-- **A `deploy` job in the same workflow**, gated by `needs: test` and
-  `if: github.ref == 'refs/heads/main' && github.event_name == 'push'` — it only runs
-  after `test` passes, only on a push to `main`, never on a pull request. Until the
-  secrets below are set, this job fails immediately with a clear "missing
-  credential"-type error from the Cloudflare action — it does not silently skip or do
-  something unexpected.
-- **`public/_redirects`** — `/* /index.html 200`. This is required for any
-  client-side-routed SPA (React Router here) deployed as static files: without it,
-  directly loading or refreshing a route like `/dashboard/stories` 404s, because
-  there's no actual `stories` file on the server — only `index.html`, which then lets
-  React Router take over. Cloudflare Pages reads this file automatically.
+Cloudflare's current "Workers & Pages" product deploys everything — including static
+sites — as a **Worker with static assets**, via `wrangler deploy`, rather than the
+older, separate "Pages" product's dashboard-only build settings (framework
+preset/output directory). This repo is configured for that:
 
-## One-time setup to enable real deployment
+- **`wrangler.jsonc`** — `{ "assets": { "directory": "./dist", "not_found_handling":
+  "single-page-application" } }`. The `not_found_handling` setting is what makes a
+  client-side-routed SPA (React Router here) work as static files: any request that
+  doesn't match a real file in `dist/` (e.g. `/dashboard/stories`, loaded directly or
+  refreshed) falls back to `index.html`, which lets React Router take over.
+- **No `public/_redirects` file** — that mechanism belongs to the older, classic Pages
+  product. Cloudflare's Workers-assets runtime also recognizes `_redirects`, and having
+  both it and `not_found_handling: "single-page-application"` active at once created a
+  genuine redirect loop (`/` → `/index.html` → matches `/*` again → loop), which failed
+  the very first real deploy attempt with `Invalid _redirects configuration: Infinite
+  loop detected`. Fixed by removing the file and keeping only the `wrangler.jsonc`
+  setting.
+- **Cloudflare's own Git-connected build pipeline** does the actual deploying —
+  configured once via the dashboard (Workers & Pages → the `restart-yourself` project
+  → connected to this GitHub repo), it runs `npm run build` then `npx wrangler deploy`
+  on every push to `main`, visible under that project's **Deployments** tab.
+  `.github/workflows/ci.yml` only runs tests (`tsc`, `oxlint`, Vitest, the PGlite
+  suite, Playwright) — it does **not** also deploy, deliberately: an earlier version
+  of this file had a second deploy job via `cloudflare/pages-action`, which targets the
+  classic Pages API and would have double-deployed through two incompatible paths
+  against a project that is actually a Worker, not a classic Pages site.
 
-1. **Push this repository to GitHub** (it has no remote configured yet in this
-   sandbox).
-2. **Create a Cloudflare Pages project** — easiest via the Cloudflare dashboard
-   (Workers & Pages → Create → Pages → Connect to Git), or via
-   `npx wrangler pages project create <name>` if you'd rather not connect Git
-   integration directly (the GitHub Action below handles deploys either way).
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - If you connect Cloudflare's own Git integration instead of using the GitHub
-     Action, disable one of the two — running both would deploy twice per push.
-3. **Add repository secrets** (Settings → Secrets and variables → Actions → Secrets):
-   - `CLOUDFLARE_API_TOKEN` — create one at
-     My Profile → API Tokens → Create Token → "Edit Cloudflare Pages" template.
-   - `CLOUDFLARE_ACCOUNT_ID` — found on any Cloudflare dashboard page's right sidebar.
-4. **Add repository variables** (same screen, "Variables" tab — these aren't secret,
-   but keeping them out of the workflow file makes them editable without a code
-   change):
-   - `CLOUDFLARE_PAGES_PROJECT` — the Pages project name from step 2.
-   - `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — from a real Supabase project (see
-     `docs/SUPABASE_SETUP.md`). Leave these unset to deploy the mock-data frontend —
-     the app is designed to work either way, same as running it locally.
-5. Push to `main`. The `deploy` job now has everything it needs.
+## Environment variables (optional — real backend vs. mock data)
 
-## Manual deployment (no GitHub Actions)
+Set under the Cloudflare project's **Settings → Environment variables** (Production):
+
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — from a real Supabase project (see
+  `docs/SUPABASE_SETUP.md`). Leave unset to deploy the fully-functional mock-data
+  frontend — the app is designed to work either way, same as running it locally.
+
+## Manual deployment (no Git integration)
 
 If you'd rather deploy directly from your machine once, with Wrangler installed:
 
 ```powershell
 npm run build
-npx wrangler pages deploy dist --project-name=<your-project-name>
+npx wrangler deploy
 ```
 
 This asks you to log in to Cloudflare interactively the first time (`npx wrangler
-login`), then uploads `dist/` directly — useful for a one-off deploy or to confirm the
-Cloudflare side is set up correctly before wiring up CI.
+login`), then uploads `dist/` per `wrangler.jsonc`'s config — useful for a one-off
+deploy, or to confirm changes locally before pushing.
 
 ## Backend deployment
 
